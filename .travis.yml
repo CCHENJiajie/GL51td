@@ -1,6 +1,5 @@
 language: groovy
-jdk: openjdk8
-before_install:
-- chmod +x gradlew
+jdk: 
+- oraclejdk8
 after_success:
 - ./gradlew jacocoTestReport coveralls
