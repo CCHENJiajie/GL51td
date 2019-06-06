@@ -47,7 +47,7 @@ class ProductControllerTest extends Specification {
 
     void "test update"() {
    		setup:
-      def id = client.toBlocking().retrieve(HttpRequest.POST("/store/products", testProduct))
+      String id = client.toBlocking().retrieve(HttpRequest.POST("/store/products", testProduct))
       Product newProduct = new Product(name: "product2", description: "desc2", price: 0.1, idealTemperature: 0.1)
 
       when:
@@ -63,7 +63,7 @@ class ProductControllerTest extends Specification {
 
     void "test delete"() {
     setup:
-    def id = client.toBlocking().retrieve(HttpRequest.POST("/store/products", testProduct))
+    String id = client.toBlocking().retrieve(HttpRequest.POST("/store/products", testProduct))
     def productList = client.toBlocking().retrieve(HttpRequest.GET("/store/products"), Argument.listOf(Product).type)
     def size = productList.size()
 
