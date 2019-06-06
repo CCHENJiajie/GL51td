@@ -15,6 +15,7 @@ class ProductControllerTest extends Specification {
     @Shared @AutoCleanup RxHttpClient client = embeddedServer.applicationContext.createBean(RxHttpClient, embeddedServer.getURL())
 
     def newProduct = new Product(name: "One")
+    Product sampleProduct = new Product("parapluie ", 12)
 
     void "test empty index"() {
         given:
@@ -45,40 +46,31 @@ class ProductControllerTest extends Specification {
 
     void "test update"() {
         setup:
-        Product oldProduct = new Product(name: name, description: description, price: price, idealTemperature: idealTemperature)
-        Product newProduct = new Product(name: name1, description: description1, price: price1, idealTemperature: idealTemperature1)
-        String id = client.toBlocking().retrieve(HttpRequest.POST('/products', oldProduct))
+        String id = client.toBlocking().retrieve(HttpRequest.POST('/store/product', sampleProduct))
 
         when:
-        client.toBlocking().retrieve(HttpRequest.PUT('/products/' + id, newProduct), Argument.of(HttpStatus).type)
-        Product updatedProduct = client.toBlocking().retrieve(HttpRequest.GET('/products/' + id), Argument.of(Product).type)
+        Product otherProduct = new Product( "parapluie", 15)
+        HttpStatus status = client.toBlocking().retrieve(HttpRequest.PATCH('/store/product/' + id, otherProduct), Argument.of(HttpStatus).type)
+        Product updatedProduct = client.toBlocking().retrieve(HttpRequest.GET('/store/product/' + id), Argument.of(Product).type)
 
         then:
-        updatedProduct.description == newProduct.description
-        updatedProduct.price == newProduct.price
-        updatedProduct.name == newProduct.name
-        updatedProduct.idealTemperature == newProduct.idealTemperature
-
-        where:
-        name  | description | price | idealTemperature | name1 | description1 | price1  | idealTemperature1
-        "aaa" | "bbb"       | 0.0   | 123000           | "ccc" | "ddd"        | 56465.3 | 64351568
+        status == OK
+        updatedProduct.getPrice() == otherProduct.getPrice()
+		updatedProduct.getName() == otherProduct.getName()
     }
 
     void "test delete"() {
         setup:
-        Product newProduct = new Product(name: name, description: description, price: price, idealTemperature: idealTemperature)
-        String id = client.toBlocking().retrieve(HttpRequest.POST('/products', newProduct))
+        String id = client.toBlocking().retrieve(HttpRequest.POST('/store/product', sampleProduct))
 
         when:
-        client.toBlocking().retrieve(HttpRequest.DELETE('/products/'+ id))
-        Product product = client.toBlocking().retrieve(HttpRequest.GET('/product/' + id), Argument.of(Product).type)
+        HttpStatus status = client.toBlocking().retrieve(HttpRequest.DELETE('/store/product/' + id), Argument.of(HttpStatus).type)
+        Product productReturned = client.toBlocking().retrieve(HttpRequest.GET('/store/product/' + id), Argument.of(Product).type)
 
         then:
+        status == OK
         thrown HttpClientResponseException
-
-        where:
-        name  | description | price | idealTemperature
-        "aaa" | "bbb"       | 0.0   | 123000
+		productReturned == null
     }
 
 }

@@ -6,4 +6,5 @@ class Product {
     String description
     double price
     double idealTemperature
+    }
 }
