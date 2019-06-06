@@ -16,7 +16,7 @@ class ProductControllerTest extends Specification {
     @Shared @AutoCleanup RxHttpClient client = embeddedServer.applicationContext.createBean(RxHttpClient, embeddedServer.getURL())
 
 	
-    Product sampleProduct = new Product("parapluie ", 12)
+    Product sampleProduct = new Product(name: "product", description: "desc", price: 0.0, idealTemperature: 0.0)
 
     void "test empty index"() {
         given:
@@ -47,7 +47,7 @@ class ProductControllerTest extends Specification {
 
     void "test update"() {
    		setup:
-      String id = client.toBlocking().retrieve(HttpRequest.POST("/products", testProduct))
+      String id = client.toBlocking().retrieve(HttpRequest.POST("/products", sampleProduct))
       Product newProduct = new Product(name: "product2", description: "desc2", price: 0.1, idealTemperature: 0.1)
 
       when:
@@ -63,7 +63,7 @@ class ProductControllerTest extends Specification {
 
     void "test delete"() {
     setup:
-    String id = client.toBlocking().retrieve(HttpRequest.POST("/products", testProduct))
+    String id = client.toBlocking().retrieve(HttpRequest.POST("/products", sampleProduct))
     def productList = client.toBlocking().retrieve(HttpRequest.GET("/products"), Argument.listOf(Product).type)
     def size = productList.size()
 
