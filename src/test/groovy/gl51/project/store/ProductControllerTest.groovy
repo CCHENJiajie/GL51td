@@ -10,6 +10,7 @@ import io.micronaut.http.client.exceptions.HttpClientResponseException
 import spock.lang.AutoCleanup
 import spock.lang.Shared
 import spock.lang.Specification
+import static io.micronaut.http.HttpStatus.*
 
 class ProductControllerTest extends Specification {
     @Shared @AutoCleanup EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer)
