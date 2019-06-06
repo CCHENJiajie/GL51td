@@ -14,7 +14,7 @@ class ProductControllerTest extends Specification {
     @Shared @AutoCleanup EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer)
     @Shared @AutoCleanup RxHttpClient client = embeddedServer.applicationContext.createBean(RxHttpClient, embeddedServer.getURL())
 
-    def newProduct = new Product(name: "One")
+	
     Product sampleProduct = new Product("parapluie ", 12)
 
     void "test empty index"() {
