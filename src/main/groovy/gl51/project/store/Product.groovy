@@ -6,7 +6,6 @@ class Product {
     String description
     double price
     double idealTemperature
-    
         Product(){
         this.id = UUID.randomUUID().toString()
 }
