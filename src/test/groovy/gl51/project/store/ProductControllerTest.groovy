@@ -47,12 +47,12 @@ class ProductControllerTest extends Specification {
 
     void "test update"() {
    		setup:
-      String id = client.toBlocking().retrieve(HttpRequest.POST("/store/products", testProduct))
+      String id = client.toBlocking().retrieve(HttpRequest.POST("/products", testProduct))
       Product newProduct = new Product(name: "product2", description: "desc2", price: 0.1, idealTemperature: 0.1)
 
       when:
       client.toBlocking().retrieve(HttpRequest.PUT("/store/products/"+id, newProduct), Argument.of(HttpStatus).type)
-      def productList = client.toBlocking().retrieve(HttpRequest.GET("/store/products"), Argument.listOf(Product).type)
+      def productList = client.toBlocking().retrieve(HttpRequest.GET("/products"), Argument.listOf(Product).type)
 
       then:
       productList.last().name == newProduct.name
@@ -63,13 +63,13 @@ class ProductControllerTest extends Specification {
 
     void "test delete"() {
     setup:
-    String id = client.toBlocking().retrieve(HttpRequest.POST("/store/products", testProduct))
-    def productList = client.toBlocking().retrieve(HttpRequest.GET("/store/products"), Argument.listOf(Product).type)
+    String id = client.toBlocking().retrieve(HttpRequest.POST("/products", testProduct))
+    def productList = client.toBlocking().retrieve(HttpRequest.GET("/products"), Argument.listOf(Product).type)
     def size = productList.size()
 
     when:
-    client.toBlocking().retrieve(HttpRequest.DELETE("/store/products/"+id), Argument.of(HttpStatus).type)
-    productList = client.toBlocking().retrieve(HttpRequest.GET("/store/products"), Argument.listOf(Product).type)
+    client.toBlocking().retrieve(HttpRequest.DELETE("/products/"+id), Argument.of(HttpStatus).type)
+    productList = client.toBlocking().retrieve(HttpRequest.GET("/products"), Argument.listOf(Product).type)
 
     then:
 	size == productList.size()+1
