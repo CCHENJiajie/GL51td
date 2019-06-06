@@ -6,7 +6,8 @@ class Product {
     String description
     double price
     double idealTemperature
-    int getID(){
-    	return id
-    }
+        Product(){
+        this.id = UUID.randomUUID().toString()
+}
+
 }

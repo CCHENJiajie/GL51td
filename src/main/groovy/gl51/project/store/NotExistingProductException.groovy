@@ -2,7 +2,7 @@ package gl51.project.store
 
 class NotExistingProductException extends Exception {
     NotExistingProductException(){
-        super()
+        super("The product has not been found !")
     }
 
     NotExistingProductException(String message){
