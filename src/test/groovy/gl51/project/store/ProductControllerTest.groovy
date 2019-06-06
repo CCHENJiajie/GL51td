@@ -51,7 +51,7 @@ class ProductControllerTest extends Specification {
       Product newProduct = new Product(name: "product2", description: "desc2", price: 0.1, idealTemperature: 0.1)
 
       when:
-      client.toBlocking().retrieve(HttpRequest.PUT("/store/products/"+id, newProduct), Argument.of(HttpStatus).type)
+      client.toBlocking().retrieve(HttpRequest.PUT("/products/"+id, newProduct), Argument.of(HttpStatus).type)
       def productList = client.toBlocking().retrieve(HttpRequest.GET("/products"), Argument.listOf(Product).type)
 
       then:
