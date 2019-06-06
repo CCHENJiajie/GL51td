@@ -1,5 +1,5 @@
 language: groovy
-jdk: 
+jdk:
 - openjdk8
 
 before_install:
