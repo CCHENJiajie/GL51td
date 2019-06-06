@@ -10,7 +10,6 @@ import io.micronaut.http.client.exceptions.HttpClientResponseException
 import spock.lang.AutoCleanup
 import spock.lang.Shared
 import spock.lang.Specification
-import static io.micronaut.http.HttpStatus.*
 
 class ProductControllerTest extends Specification {
     @Shared @AutoCleanup EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer)
@@ -47,32 +46,33 @@ class ProductControllerTest extends Specification {
     }
 
     void "test update"() {
-        setup:
-        String id = client.toBlocking().retrieve(HttpRequest.POST('/store/product', sampleProduct))
+   		setup:
+      def id = client.toBlocking().retrieve(HttpRequest.POST("/store/products", testProduct))
+      Product newProduct = new Product(name: "product2", description: "desc2", price: 0.1, idealTemperature: 0.1)
 
-        when:
-        Product otherProduct = new Product( "parapluie", 15)
-        HttpStatus status = client.toBlocking().retrieve(HttpRequest.PATCH('/store/product/' + id, otherProduct), Argument.of(HttpStatus).type)
-        Product updatedProduct = client.toBlocking().retrieve(HttpRequest.GET('/store/product/' + id), Argument.of(Product).type)
+      when:
+      client.toBlocking().retrieve(HttpRequest.PUT("/store/products/"+id, newProduct), Argument.of(HttpStatus).type)
+      def productList = client.toBlocking().retrieve(HttpRequest.GET("/store/products"), Argument.listOf(Product).type)
 
-        then:
-        status == OK
-        updatedProduct.getPrice() == otherProduct.getPrice()
-		updatedProduct.getName() == otherProduct.getName()
+      then:
+      productList.last().name == newProduct.name
+      productList.last().description == newProduct.description
+      productList.last().price == newProduct.price
+	productList.last().idealTemperature == newProduct.idealTemperature
     }
 
     void "test delete"() {
-        setup:
-        String id = client.toBlocking().retrieve(HttpRequest.POST('/store/product', sampleProduct))
+    setup:
+    def id = client.toBlocking().retrieve(HttpRequest.POST("/store/products", testProduct))
+    def productList = client.toBlocking().retrieve(HttpRequest.GET("/store/products"), Argument.listOf(Product).type)
+    def size = productList.size()
 
-        when:
-        HttpStatus status = client.toBlocking().retrieve(HttpRequest.DELETE('/store/product/' + id), Argument.of(HttpStatus).type)
-        Product productReturned = client.toBlocking().retrieve(HttpRequest.GET('/store/product/' + id), Argument.of(Product).type)
+    when:
+    client.toBlocking().retrieve(HttpRequest.DELETE("/store/products/"+id), Argument.of(HttpStatus).type)
+    productList = client.toBlocking().retrieve(HttpRequest.GET("/store/products"), Argument.listOf(Product).type)
 
-        then:
-        status == OK
-        thrown HttpClientResponseException
-		productReturned == null
+    then:
+	size == productList.size()+1
     }
 
 }
