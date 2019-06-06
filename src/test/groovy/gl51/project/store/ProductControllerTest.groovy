@@ -15,8 +15,6 @@ class ProductControllerTest extends Specification {
     @Shared @AutoCleanup EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer)
     @Shared @AutoCleanup RxHttpClient client = embeddedServer.applicationContext.createBean(RxHttpClient, embeddedServer.getURL())
 
-	
-    Product sampleProduct = new Product(name: "product", description: "desc", price: 0.0, idealTemperature: 0.0)
 
     void "test empty index"() {
         given:
@@ -42,13 +40,14 @@ class ProductControllerTest extends Specification {
 
         where:
         name | description | price | idealTemperature
-        "aaa" | "bbb" | 0.0 | 123000
+        "aaa" | "bbb" | 0.0 | 1561
     }
 
     void "test update"() {
    		setup:
+      Product sampleProduct = new Product(name: name, description: description, price: price, idealTemperature: idealTemperature)
       String id = client.toBlocking().retrieve(HttpRequest.POST("/products", sampleProduct))
-      Product newProduct = new Product(name: "product2", description: "desc2", price: 0.1, idealTemperature: 0.1)
+      Product newProduct = new Product(name: name1, description: description1, price: price1, idealTemperature: idealTemperature1)
 
       when:
       client.toBlocking().retrieve(HttpRequest.PUT("/products/"+id, newProduct), Argument.of(HttpStatus).type)
@@ -59,10 +58,14 @@ class ProductControllerTest extends Specification {
       productList.last().description == newProduct.description
       productList.last().price == newProduct.price
 	productList.last().idealTemperature == newProduct.idealTemperature
+      where:
+        name | description | price | idealTemperature | name1 | description1 | price1 | idealTemperature1
+        "aaa" | "bbb" | 0.0 | 1561 | "ccc" | "ddd" | 465.2 | 131
     }
 
     void "test delete"() {
     setup:
+    Product sampleProduct = new Product(name: name, description: description, price: price, idealTemperature: idealTemperature)
     String id = client.toBlocking().retrieve(HttpRequest.POST("/products", sampleProduct))
     def productList = client.toBlocking().retrieve(HttpRequest.GET("/products"), Argument.listOf(Product).type)
     def size = productList.size()
@@ -73,6 +76,9 @@ class ProductControllerTest extends Specification {
 
     then:
 	size == productList.size()+1
+    where:
+        name | description | price | idealTemperature
+        "aaa" | "bbb" | 0.0 | 1561
     }
 
 }
